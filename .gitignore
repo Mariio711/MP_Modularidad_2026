@@ -1,0 +1,10 @@
+Sesion1.zip
+.vscode/
+*.o
+*.exe
+*.out
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
