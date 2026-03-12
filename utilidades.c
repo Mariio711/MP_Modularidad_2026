@@ -21,12 +21,9 @@ void leerCadena(char *cadena, int longitud) {
 }
 
 int leerEntero() {
-    int numero;
     char buffer[100];
     
-    fgets(buffer, 100, stdin);
-    // Intentar convertir, si falla devuelve 0 o valor por defecto según lógica
-    // Aquí asumimos una conversión directa simple
+    leerCadena(buffer, 100);
     return atoi(buffer);
 }
 
