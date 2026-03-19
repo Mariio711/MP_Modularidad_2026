@@ -1,0 +1,5 @@
+OB01-Llave 1-Llave que abre la puerta del aula B01 
+OB02-Destornillador-Destornillador oxidado en la cafeteria, dicen que lleva mas tiempo en la esi que jose fidel
+OB03-
+OB04-
+OB05-Mapa-Mapa que contiene la distribucion de las salas-01
