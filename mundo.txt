@@ -1,0 +1,4 @@
+1|Entrada|Estás frente a la puerta principal de la ESI.|2|-1|-1|-1
+2|Hall Principal|Un amplio hall con carteles de eventos.|-1|1|3|4
+3|Cafetería|Huele a café y tostadas. Hay mucho ruido.|-1|-1|-1|2
+4|Secretaría|Aquí se realizan trámites administrativos.|-1|-1|2|-1
