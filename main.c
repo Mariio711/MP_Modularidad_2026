@@ -4,17 +4,14 @@
 #include "ficheros.h"
 
 int main() {
-    Usuario usuarios[MAX_USUARIOS];
-    int numUsuarios = 0;
     Usuario usuarioActual;
 
-    // Cargar Usuarios
-    numUsuarios = cargarUsuarios(usuarios);
+    // Ya no necesitamos cargar todos los usuarios al inicio
 
     // Sistema de Acceso
-    if (menuInicio(usuarios, &numUsuarios, &usuarioActual)) {
-        // Iniciar Motor
-        iniciarMotorJuego(&usuarioActual, usuarios, numUsuarios);
+    if (menuInicio(&usuarioActual)) {
+        // Iniciar Motor solo con el usuario autenticado
+        iniciarMotorJuego(&usuarioActual);
     } else {
         printf("Fin de la sesión.\n");
     }

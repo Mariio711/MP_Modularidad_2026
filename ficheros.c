@@ -58,6 +58,129 @@ void guardarUsuarios(Usuario *usuarios, int numUsuarios) {
     fclose(f);
 }
 
+int verificarUsuario(char *nombre, char *password, Usuario *dest) {
+    FILE *f = fopen("usuarios.txt", "r");
+    if (!f) return 0;
+    
+    char linea[MAX_LINEA];
+    int id, sala;
+    char tempName[MAX_CADENA], tempPass[MAX_CADENA];
+
+    while (fgets(linea, MAX_LINEA, f)) {
+        linea[strcspn(linea, "\n")] = 0;
+        
+        // Parse manual para evitar problemas con sscanf
+        char *token = strtok(linea, "|");
+        if (!token) continue;
+        id = atoi(token);
+        
+        token = strtok(NULL, "|");
+        if (!token) continue;
+        strcpy(tempName, token);
+        
+        token = strtok(NULL, "|");
+        if (!token) continue;
+        strcpy(tempPass, token);
+        
+        token = strtok(NULL, "|");
+        int sala = token ? atoi(token) : 1; 
+
+        if (strcmp(tempName, nombre) == 0 && strcmp(tempPass, password) == 0) {
+            dest->id = id;
+            strcpy(dest->name, tempName);
+            strcpy(dest->password, tempPass);
+            dest->habitacion_actual = sala;
+            fclose(f);
+            return 1;
+        }
+    }
+    fclose(f);
+    return 0;
+}
+
+int existeUsuario(char *nombre) {
+    FILE *f = fopen("usuarios.txt", "r");
+    if (!f) return 0;
+    
+    char linea[MAX_LINEA];
+    char tempName[MAX_CADENA];
+    
+    while (fgets(linea, MAX_LINEA, f)) {
+        linea[strcspn(linea, "\n")] = 0;
+        char *token = strtok(linea, "|"); // ID
+        token = strtok(NULL, "|"); // Nombre
+        
+        if (token && strcmp(token, nombre) == 0) {
+            fclose(f);
+            return 1;
+        }
+    }
+    fclose(f);
+    return 0;
+}
+
+int obtenerProximoId() {
+    FILE *f = fopen("usuarios.txt", "r");
+    if (!f) return 1;
+    
+    int maxId = 0, currentId;
+    char linea[MAX_LINEA];
+    
+    while (fgets(linea, MAX_LINEA, f)) {
+        char *token = strtok(linea, "|");
+        if (token) {
+            currentId = atoi(token);
+            if (currentId > maxId) maxId = currentId;
+        }
+    }
+    fclose(f);
+    return maxId + 1;
+}
+
+void anadirUsuario(Usuario *nuevoUsuario) {
+    nuevoUsuario->id = obtenerProximoId(); // Auto-incremento real
+    
+    FILE *f = fopen("usuarios.txt", "a");
+    if (!f) return;
+    
+    fprintf(f, "%d|%s|%s|%d\n", 
+        nuevoUsuario->id, 
+        nuevoUsuario->name, 
+        nuevoUsuario->password, 
+        nuevoUsuario->habitacion_actual);
+    fclose(f);
+}
+
+void actualizarUsuarioIndividual(Usuario *u) {
+    FILE *origen = fopen("usuarios.txt", "r");
+    FILE *destino = fopen("usuarios.tmp", "w");
+    
+    if (!origen || !destino) return;
+    
+    char linea[MAX_LINEA];
+    char copiaLinea[MAX_LINEA];
+    
+    while (fgets(linea, MAX_LINEA, origen)) {
+        strcpy(copiaLinea, linea);
+        char *token = strtok(linea, "|");
+        int id = atoi(token);
+        
+        if (id == u->id) {
+            // Esta es la línea a actualizar
+            fprintf(destino, "%d|%s|%s|%d\n", u->id, u->name, u->password, u->habitacion_actual);
+        } else {
+            // Copiar original
+            fprintf(destino, "%s", copiaLinea);
+        }
+    }
+    
+    fclose(origen);
+    fclose(destino);
+    
+    remove("usuarios.txt");
+    rename("usuarios.tmp", "usuarios.txt");
+}
+
 // --- MUNDO (MAPA) ---
 
 /*

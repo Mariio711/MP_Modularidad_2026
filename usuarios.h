@@ -13,9 +13,9 @@ typedef struct {
 } Usuario;
 
 // Gestión de interacción con usuario
-int menuInicio(Usuario *usuarios, int *numUsuarios, Usuario *usuarioActual);
-int iniciarSesion(Usuario *usuarios, int numUsuarios, Usuario *usuarioActual);
-void registrarUsuario(Usuario *usuarios, int *numUsuarios);
-void listarUsuarios(Usuario *usuarios, int numUsuarios);
+int menuInicio(Usuario *usuarioActual);
+int iniciarSesion(Usuario *usuarioActual);
+void registrarUsuario();
+void listarUsuarios();
 
 #endif

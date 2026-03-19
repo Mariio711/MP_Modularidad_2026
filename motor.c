@@ -8,7 +8,7 @@
 // Variables de estado del juego (locales al módulo o pasadas por referencia)
 // Para simplificar en esta fase, usaremos variables locales en iniciarMotorJuego
 
-void iniciarMotorJuego(Usuario *usuarioActual, Usuario *todosLosUsuarios, int numUsuarios) {
+void iniciarMotorJuego(Usuario *usuarioActual) {
     Habitacion mundo[100];
     int numHabitaciones = 0;
     int idHabitacionActual = usuarioActual->habitacion_actual; // Cargar última posición
@@ -72,7 +72,6 @@ void iniciarMotorJuego(Usuario *usuarioActual, Usuario *todosLosUsuarios, int nu
 
         // Leer opción numérica
         printf("\n" COLOR_GREEN "Selecciona una opción (1-5): " COLOR_RESET);
-
         if (fgets(comando, sizeof(comando), stdin) == NULL) {
             salir = 1; continue;
         }
@@ -126,18 +125,12 @@ void iniciarMotorJuego(Usuario *usuarioActual, Usuario *todosLosUsuarios, int nu
         }
     }
 
-    // Guardar estado al salir
+    // Guardar estado al salir - EFICIENTE
     printf("\nGuardando partida...\n");
     usuarioActual->habitacion_actual = idHabitacionActual;
 
-    // Actualizar en el array global
-    for(int i=0; i<numUsuarios; i++) {
-        if(todosLosUsuarios[i].id == usuarioActual->id) {
-            todosLosUsuarios[i].habitacion_actual = idHabitacionActual;
-            break;
-        }
-    }
+    // Solo actualizamos este usuario en el fichero
+    actualizarUsuarioIndividual(usuarioActual);
     
-    guardarUsuarios(todosLosUsuarios, numUsuarios);
     printf("Progreso guardado. ¡Hasta pronto!\n");
 }
