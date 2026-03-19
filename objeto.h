@@ -11,18 +11,9 @@ typedef struct objeto
     int localiz;
 } objeto;
 
-void mostrarmochila(objeto obj){
-    printf("Objeto: %s\n", obj.nom_obj);
-    printf("Descripcion: %s\n", obj.Describ);
-    printf("Encontrado en: %d\n", obj.localiz);
-}
-
-void añadirObjeto(objeto obj[] , int *num_objetos){
-    realloc(obj, (*num_objetos + 1) * sizeof(objeto));
-
-    printf("Objeto añadido: %s\n", obj[*num_objetos].nom_obj);
-    (*num_objetos)++;
-}
+void mostrarmochila(objeto obj);
+void añadirObjeto(objeto obj[] , int *num_objetos);
+void mostrarMapa();
 
 #endif
 
