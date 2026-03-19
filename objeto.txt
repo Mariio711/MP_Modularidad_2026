@@ -1,5 +1,6 @@
-OB01-Llave 1-Llave que abre la puerta del aula B01 
-OB02-Destornillador-Destornillador oxidado en la cafeteria, dicen que lleva mas tiempo en la esi que jose fidel
-OB03-
-OB04-
-OB05-Mapa-Mapa que contiene la distribucion de las salas-01
+OB01-Llave 1-Llave oxidada que abre el Aula B01-00
+OB02-Screwdriver-Herramienta para abrir el armario-05
+OB03-Llave C01-Llave de plata encontrada en A01-04
+OB04-Pomo Bronce-Pomo necesario para la Biblioteca-03
+OB05-Mapa ESI-Mapa con la distribucion de las salas-02
+OB06-Libro Viejo-Libro para el puzzle de la Biblioteca-04

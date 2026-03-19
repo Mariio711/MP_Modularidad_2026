@@ -1,0 +1,7 @@
+00-Pasillo Central-INICIAL-Eje principal de la ESI que conecta todas las aulas. Es un pasillo largo y sombrio con carteles de examenes pasados.
+01-Conserjeria-NORMAL-Pequeno habitaculo con mostrador situado a la entrada. Huele a polvo y hay un armario cerrado en la pared norte.
+02-Clase B01-NORMAL-Aula de teoria con filas de pupitres alineados. La puerta parece requerir una llave especifica para entrar.
+03-Clase C01-NORMAL-Una clase antigua con una puerta de madera que chirria. Es un lugar silencioso y algo inquietante.
+04-Clase A01-NORMAL-Aula de informatica con ordenadores apagados. En la entrada destaca un panel numerico para introducir codigos.
+05-Cafeteria-NORMAL-Zona de descanso con mesas desordenadas y olor a cafe rancio. Hay un teclado electronico junto a la puerta de acceso.
+06-Biblioteca-SALIDA-Sala llena de estanterias con libros antiguos de programacion. Al fondo se vislumbra la puerta que da al exterior.

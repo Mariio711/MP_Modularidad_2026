@@ -1,29 +1,27 @@
 #ifndef SALA_H
 #define SALA_H
+
 #include <stdio.h>
+#include <stdlib.h>
+#include "objeto.h" 
 
-typedef struct sala
-{
-    int id;
-    char nombre[20];
-    char tipo_sala[20];
-    char descripcion[50];
-} sala;
+typedef struct {
+    int id_sala;           
+    char nomb_sala[31];    
+    char tipo[10];         
+    char descrip[151];     
+} tSala;
 
-void DescribirSala(sala s)
-{
-    printf("Sala: %s\n", s.nombre);
-    printf("Descripcion: %s\n", s.descripcion);
-    printf("Tipo de sala: %s\n", s.tipo_sala);
-}
+/* Prototipos corregidos usando tObjeto */
+void pasillo(tObjeto** inv, int* n_inv);
+void sala1(tObjeto** inv, int* n_inv);
+void sala2(tObjeto** inv, int* n_inv);
+void sala3(tObjeto** inv, int* n_inv);
+void sala4(tObjeto** inv, int* n_inv);
+void sala5(tObjeto** inv, int* n_inv);
+void sala6(tObjeto** inv, int* n_inv);
 
-void mostrarSala(sala s)
-{
-    
-}
-
-void mapa_inicio(){
-    
-}
+void DescribirSala(tSala s);
+void limpiar_buffer();
 
 #endif
