@@ -1,275 +1,182 @@
 #include "sala.h"
 #include "objeto.h"
+#include "conexiones.h"
+#include "puzzles.h"
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-// --- HUB CENTRAL: EL PASILLO ---
-// --- HUB CENTRAL: EL PASILLO ---
-void pasillo(tObjeto** inv, int* n_inv) {
+/**
+ * Función auxiliar para limpiar el buffer de entrada.
+ */
+void limpiar_buffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+// --- HUB CENTRAL: EL PASILLO (ID 7) ---
+void pasillo(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int n_puz) {
     int op;
+    int id_pasillo = 7; 
+
     printf("\n========= PASILLO CENTRAL =========");
-    printf("\n  IZQUIERDA         DERECHA");
-    printf("\n[1] Conserjeria   [6] Biblioteca");
-    printf("\n[2] Clase B01     [5] Cafeteria");
-    printf("\n[3] Clase C01     [4] Clase A01");
+    mostrarMapa(); // Llama a la representación visual
+    listar_salidas_disponibles(con, n_con, id_pasillo); // Muestra conexiones dinámicas
+    
+    printf("\n[7] Registrar taquillas | [8] Mochila | [0] Salir");
     printf("\n-----------------------------------");
-    printf("\n[7] Registrar taquillas del pasillo");
-    printf("\n[8] Mirar Mochila\n");
-    printf("===================================");
-    printf("\n¿Que quieres hacer? (0 para Salir): ");
-    scanf("%d", &op);
-
-    switch(op) {
-        case 1: 
-            // Lógica de acceso a Conserjería
-            if (tieneObjeto(*inv, *n_inv, "OB01")) {
-                sala1(inv, n_inv); 
-            } else {
-                printf("\n[BLOQUEADO] La puerta de Conserjeria esta cerrada.");
-                printf("\nEse viejo conserje siempre guarda la llave en algun lugar del pasillo...\n");
-                pasillo(inv, n_inv);
-            }
-            break;
-        case 2: sala2(inv, n_inv); break;
-        case 3: sala3(inv, n_inv); break;
-        case 4: sala4(inv, n_inv); break;
-        case 5: sala5(inv, n_inv); break;
-        case 6: sala6(inv, n_inv); break;
-        case 7: 
-            // Lógica de búsqueda en las taquillas
-            if (tieneObjeto(*inv, *n_inv, "OB01")) {
-                printf("\nYa has registrado las taquillas. No queda nada util.\n");
-            } else {
-                printf("\nBuscas entre las taquillas abandonadas...");
-                printf("\n¡Bingo! Entre unos libros de calculo viejos encuentras una llave.");
-                tObjeto llave1 = {"OB01", "Llave 1", "Llave oxidada que abre el Aula B01", 0};
-                *inv = añadirObjetoDin(*inv, n_inv, llave1);
-            }
-            pasillo(inv, n_inv);
-            break;
-        case 8:
-            mostrarMochila(*inv, *n_inv);
-            pasillo(inv, n_inv);
-            break;
-        case 0: exit(0);
-        default: pasillo(inv, n_inv);
+    printf("\n¿Qué quieres hacer? ");
+    
+    if (scanf("%d", &op) != 1) {
+        limpiar_buffer();
+        pasillo(inv, n_inv, con, n_con, puz, n_puz);
+        return;
     }
+
+    if (op >= 1 && op <= 6) {
+        // Verifica si la conexión está "Activa" en el sistema modular
+        if (comprobar_estado_conexion(con, n_con, id_pasillo, op)) { 
+            switch(op) {
+                case 1: sala1(inv, n_inv, con, n_con, puz, n_puz); break;
+                case 2: sala2(inv, n_inv, con, n_con, puz, n_puz); break;
+                case 3: sala3(inv, n_inv, con, n_con, puz, n_puz); break;
+                case 4: sala4(inv, n_inv, con, n_con, puz, n_puz); break;
+                case 5: sala5(inv, n_inv, con, n_con, puz, n_puz); break;
+                case 6: sala6(inv, n_inv, con, n_con, puz, n_puz); break;
+            }
+        } else {
+            printf("\n[BLOQUEADO] Puerta cerrada. Necesitas un objeto o resolver un puzle.\n");
+            pasillo(inv, n_inv, con, n_con, puz, n_puz);
+        }
+    } else if (op == 7) {
+        if (!tieneObjeto(*inv, *n_inv, "OB01")) { // Comprueba posesión
+            tObjeto llave1 = {"OB01", "Llave 1", "Abre el Aula B01", 7};
+            *inv = añadirObjetoDin(*inv, n_inv, llave1); // Añade dinámicamente
+            desbloquear_conexion(con, n_con, 7, 2, "OB01"); // Desbloquea acceso
+        } else printf("\nNo hay nada mas en las taquillas.\n");
+        pasillo(inv, n_inv, con, n_con, puz, n_puz);
+    } else if (op == 8) {
+        mostrarMochila(*inv, *n_inv); // Muestra inventario
+        pasillo(inv, n_inv, con, n_con, puz, n_puz);
+    } else if (op == 0) exit(0);
 }
 
-// SALA 1: CONSERJERÍA (Bloqueada: necesita OB02)
-void sala1(tObjeto** inv, int* n_inv) {
-    int op, sitio;
+// SALA 1: CONSERJERÍA (ID 1)
+void sala1(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int n_puz) {
+    int op;
     printf("\n--- [1] CONSERJERÍA ---");
-    printf("\nHas entrado usando la Llave 1. El lugar huele a cafe y papel viejo.");
-    printf("\n1. Buscar en la sala\n2. Volver al pasillo\n> ");
+    printf("\n1. Abrir armario con DESTORNILLADOR\n2. Volver al pasillo\n> ");
     scanf("%d", &op);
 
     if (op == 1) {
-        printf("\n¿Donde quieres buscar?\n1. Escritorio lleno de polvo\n2. Perchero antiguo\n3. Armario metalico cerrado\n> ");
-        scanf("%d", &sitio);
-
-        if (sitio == 3) {
-            if (tieneObjeto(*inv, *n_inv, "OB02")) {
-                printf("\n[ÉXITO] Usas el DESTORNILLADOR para quitar los tornillos del armario.");
-                printf("\nDentro ves un post-it: 'El codigo para A01 es P02'.\n");
-            } else {
-                printf("\nEl armario tiene los tornillos oxidados. No puedes abrirlo a mano.\n");
-            }
-        } else if (sitio == 1) {
-            printf("\nSolo hay facturas antiguas de la luz y un boligrafo sin tinta.\n");
-        } else {
-            printf("\nUn abrigo viejo que no tiene nada en los bolsillos.\n");
-        }
-        sala1(inv, n_inv); // Permite seguir explorando la sala
-    } else {
-        pasillo(inv, n_inv);
-    }
+        if (tieneObjeto(*inv, *n_inv, "OB02")) { 
+            if (!tieneObjeto(*inv, *n_inv, "OB08")) {
+                printf("\n[ÉXITO] Abres el armario y encuentras una NOTA CON EL CÓDIGO P02.");
+                tObjeto nota2 = {"OB08", "Nota P02", "Contiene el codigo: 7109", 1};
+                *inv = añadirObjetoDin(*inv, n_inv, nota2); 
+            } else printf("\nYa tienes la nota del armario.\n");
+        } else printf("\nNecesitas el DESTORNILLADOR (OB02) para forzar el armario.\n");
+        sala1(inv, n_inv, con, n_con, puz, n_puz);
+    } else pasillo(inv, n_inv, con, n_con, puz, n_puz);
 }
 
-// SALA 2: CLASE B01 (Bloqueada: necesita OB01)
-void sala2(tObjeto** inv, int* n_inv) {
-    int op, sitio;
+// SALA 2: CLASE B01 (ID 2)
+void sala2(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int n_puz) {
+    int op;
     printf("\n--- [2] CLASE B01 ---");
-    
-    // Condición de entrada: Llave 1 (OB01)
-    if (!tieneObjeto(*inv, *n_inv, "OB01")) {
-        printf("\n[BLOQUEADO] La puerta esta cerrada. Necesitas la LLAVE 1.\n");
-        pasillo(inv, n_inv);
-        return;
-    }
-
-    printf("\n1. Buscar en la sala\n2. Volver al pasillo\n> ");
+    printf("\n1. Registrar mesa del profesor\n2. Volver al pasillo\n> ");
     scanf("%d", &op);
 
     if (op == 1) {
-        printf("\n¿Donde quieres buscar?\n1. Pupitres\n2. Pizarra\n3. Mesa del profesor\n> ");
-        scanf("%d", &sitio);
-
-        if (sitio == 3) { // El objeto esta en la mesa del profesor
-            if (!tieneObjeto(*inv, *n_inv, "OB05")) {
-                printf("\n¡Encontrado! Bajo unos examenes estan el MAPA (OB05) y el codigo P01.");
-                tObjeto mapa = {"OB05", "Mapa", "Distribucion salas", 2};
-                *inv = añadirObjetoDin(*inv, n_inv, mapa);
-            } else {
-                printf("\nYa has registrado la mesa. No queda nada util.");
-            }
-        } else {
-            printf("\nNo encuentras nada interesante aqui.");
+        if (!tieneObjeto(*inv, *n_inv, "OB05")) {
+            tObjeto mapa = {"OB05", "Mapa", "Mapa del edificio", 2};
+            *inv = añadirObjetoDin(*inv, n_inv, mapa); 
         }
-        sala2(inv, n_inv); // Mantiene al jugador en la sala tras buscar
-    } else {
-        pasillo(inv, n_inv);
-    }
-}
-
-// SALA 3: CLASE C01 (Bloqueada: necesita OB03)
-void sala3(tObjeto** inv, int* n_inv) {
-    int op, sitio;
-    if (!tieneObjeto(*inv, *n_inv, "OB03")) {
-        printf("\n[BLOQUEADO] La puerta de C01 requiere una llave plateada.\n");
-        pasillo(inv, n_inv);
-        return;
-    }
-
-    printf("\n--- [3] CLASE C01 ---");
-    printf("\n1. Buscar en la sala\n2. Volver al pasillo\n> ");
-    scanf("%d", &op);
-
-    if (op == 1) {
-        printf("\n¿Dónde buscas?\n1. Estantería de libros\n2. Papelera\n3. Cajón de la mesa\n> ");
-        scanf("%d", &sitio);
-
-        if (sitio == 3) {
-            if (!tieneObjeto(*inv, *n_inv, "OB04")) {
-                printf("\n¡Encontrado! En el fondo del cajón está el POMO DE BRONCE (OB04).");
-                tObjeto pomo = {"OB04", "Pomo Bronce", "Pomo necesario para la Biblioteca", 3};
-                *inv = añadirObjetoDin(*inv, n_inv, pomo);
-            } else {
-                printf("\nEl cajón ya está vacío.");
-            }
-        } else {
-            printf("\nNo hay nada útil aquí.");
-        }
-        sala3(inv, n_inv);
-    } else pasillo(inv, n_inv);
-}
-
-// SALA 4: CLASE A01 (Bloqueada: necesita Codigo P02)
-void sala4(tObjeto** inv, int* n_inv) {
-    int op, sitio;
-    char code[10];
-    
-    printf("\n--- [4] CLASE A01 ---");
-    printf("\nIntroduce el código de seguridad: ");
-    scanf("%s", code);
-
-    if (strcmp(code, "P02") == 0) {
-        printf("\n1. Buscar en la sala\n2. Volver al pasillo\n> ");
-        scanf("%d", &op);
-
-        if (op == 1) {
-            printf("\n¿Dónde buscas?\n1. Debajo de los teclados\n2. Detrás del monitor\n3. Cajonera metálica\n> ");
-            scanf("%d", &sitio);
-
-            if (sitio == 3) {
-                if (!tieneObjeto(*inv, *n_inv, "OB03")) {
-                    printf("\n¡Doble hallazgo! Encuentras la LLAVE C01 (OB03) y un LIBRO VIEJO (OB06).");
-                    tObjeto ll = {"OB03", "Llave C01", "Llave de plata", 4};
-                    tObjeto li = {"OB06", "Libro Viejo", "Libro de Metodologia", 4};
-                    *inv = añadirObjetoDin(*inv, n_inv, ll);
-                    *inv = añadirObjetoDin(*inv, n_inv, li);
-                } else {
-                    printf("\nYa has registrado la cajonera.");
-                }
-            } else {
-                printf("\nSolo hay cables y polvo.");
-            }
-            sala4(inv, n_inv);
-        } else pasillo(inv, n_inv);
-    } else {
-        printf("\nCódigo incorrecto.\n");
-        pasillo(inv, n_inv);
-    }
-}
-
-// SALA 5: CAFETERÍA (Bloqueada: necesita Codigo P01)
-void sala5(tObjeto** inv, int* n_inv) {
-    int op, sitio;
-    char code[10];
-    
-    printf("\n--- [5] CAFETERÍA ---");
-    printf("\nIntroduce codigo de acceso: ");
-    scanf("%s", code);
-
-    if (strcmp(code, "P01") == 0) {
-        printf("\n1. Buscar en la sala\n2. Volver al pasillo\n> ");
-        scanf("%d", &op);
-
-        if (op == 1) {
-            printf("\n¿Donde buscas?\n1. La barra\n2. La cafetera\n3. Debajo de las mesas\n> ");
-            scanf("%d", &sitio);
-
-            if (sitio == 1) { // El destornillador esta en la barra
-                if (!tieneObjeto(*inv, *n_inv, "OB02")) {
-                    printf("\n¡Bingo! Entre unas tazas sucias esta el DESTORNILLADOR (OB02).");
-                    tObjeto dest = {"OB02", "Destornillador", "Herramienta oxidada", 5};
-                    *inv = añadirObjetoDin(*inv, n_inv, dest);
-                } else {
-                    printf("\nLa barra esta limpia. Ya te llevaste lo que habia.");
-                }
-            } else {
-                printf("\nSolo hay restos de comida y polvo.");
-            }
-            sala5(inv, n_inv);
-        } else pasillo(inv, n_inv);
-    } else {
-        printf("\nCodigo incorrecto.");
-        pasillo(inv, n_inv);
-    }
-}
-
-// SALA 6: BIBLIOTECA (Final: necesita OB04)
-void sala6(tObjeto** inv, int* n_inv) {
-    int estanteria, estante;
-    
-    // REQUISITO DE ENTRADA: El Pomo (OB04)
-    if (!tieneObjeto(*inv, *n_inv, "OB04")) { //sergio (requisito de conexion)
-        printf("\n[BLOQUEADO] La puerta no tiene pomo. No puedes entrar.\n");
-        pasillo(inv, n_inv);
-        return;
-    }
-
-    printf("\n--- [6] BIBLIOTECA (SALA DE SALIDA) ---"); //sergio (puzzle final)
-    printf("\nFrente a ti hay tres grandes estanterias llenas de libros antiguos.");
-    printf("\n1. Estanteria GII (Informatica)\n2. Estanteria GIA (Aeroespacial)\n3. Estanteria DISEÑO\n4. Volver al pasillo\n> ");
-    scanf("%d", &estanteria);
-
-    if (estanteria >= 1 && estanteria <= 3) {
-        printf("\nHas seleccionado una estanteria. Tiene tres estantes disponibles:");
         
-        if (estanteria == 1) { // GII
-            printf("\n1. Metodologia de la Programacion\n2. Estructura de Computadores\n3. Algebra\n> ");
-        } else if (estanteria == 2) { // GIA
-            printf("\n1. Aerodinamica\n2. Termodinamica\n3. Mecanica de Vuelo\n> ");
-        } else { // DISEÑO
-            printf("\n1. Teoria del Color\n2. Ergonomia\n3. Tipografia\n> ");
-        }
-        scanf("%d", &estante);
-
-        // LÓGICA DEL PUZLE FINAL: Colocar el libro en GII -> Metodología
-        if (estanteria == 1 && estante == 1) {
-            if (tieneObjeto(*inv, *n_inv, "OB06")) {
-                printf("\n[CORRECTO] Colocas el LIBRO VIEJO en el estante de Metodologia.");
-                printf("\nSe oye un click... ¡La pared de libros se abre revelando la SALIDA!");
-                printf("\n************************************************");
-                printf("\n* ¡VICTORIA! HAS COMPLETADO EL ESI-ESCAPE      *");
-                printf("\n************************************************\n");
-                exit(0); // [cite: 148]
-            } else {
-                printf("\nReconoces el hueco para el libro, pero no lo llevas en el inventario.\n");
-            }
+        if (!tieneObjeto(*inv, *n_inv, "OB07")) {
+            printf("\n¡Encontrado! Un papel arrugado con el CODIGO P01.");
+            tObjeto nota1 = {"OB07", "Nota P01", "Contiene el codigo: 1492", 2};
+            *inv = añadirObjetoDin(*inv, n_inv, nota1); 
         } else {
-            printf("\nColocas el libro pero no ocurre nada. No parece ser su lugar.\n");
+            printf("\nNo hay nada mas de interes en la mesa.");
         }
+        sala2(inv, n_inv, con, n_con, puz, n_puz);
+    } else pasillo(inv, n_inv, con, n_con, puz, n_puz);
+}
+
+// SALA 3: CLASE C01 (ID 3)
+void sala3(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int n_puz) {
+    int op;
+    printf("\n--- [3] CLASE C01 ---");
+    printf("\n1. Buscar en cajones\n2. Volver al pasillo\n> ");
+    scanf("%d", &op);
+
+    if (op == 1 && !tieneObjeto(*inv, *n_inv, "OB04")) {
+        tObjeto pomo = {"OB04", "Pomo Bronce", "Necesario para la Biblioteca", 3};
+        *inv = añadirObjetoDin(*inv, n_inv, pomo);
+        desbloquear_conexion(con, n_con, 7, 6, "OB04"); //
+        sala3(inv, n_inv, con, n_con, puz, n_puz);
+    } else pasillo(inv, n_inv, con, n_con, puz, n_puz);
+}
+
+// SALA 4: CLASE A01 (ID 4)
+void sala4(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int n_puz) {
+    char respuesta[50];
+    printf("\n--- [4] CLASE A01 ---");
+    
+    if (tieneObjeto(*inv, *n_inv, "OB08")) { // Verifica si tiene la nota del código
+        mostrar_descripcion_puzle(puz, n_puz, "P02"); //
+        printf("Introduce respuesta: ");
+        scanf("%s", respuesta);
+
+        if (verificar_solucion(puz, n_puz, "P02", respuesta)) { //
+            if (!tieneObjeto(*inv, *n_inv, "OB03")) {
+                tObjeto l1 = {"OB03", "Llave C01", "Llave plateada", 4};
+                tObjeto l2 = {"OB06", "Libro Viejo", "Metodologia", 4};
+                *inv = añadirObjetoDin(*inv, n_inv, l1);
+                *inv = añadirObjetoDin(*inv, n_inv, l2);
+                desbloquear_conexion(con, n_con, 7, 3, "OB03"); 
+            }
+        }
+    } else {
+        printf("\nEl terminal pide un codigo. Quizas este anotado en la Conserjeria...\n");
     }
-    pasillo(inv, n_inv);
+    pasillo(inv, n_inv, con, n_con, puz, n_puz);
+}
+
+// SALA 5: CAFETERÍA (ID 5)
+void sala5(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int n_puz) {
+    char respuesta[50];
+    printf("\n--- [5] CAFETERÍA ---");
+    
+    if (tieneObjeto(*inv, *n_inv, "OB07")) { // Verifica si tiene la nota del código
+        mostrar_descripcion_puzle(puz, n_puz, "P01"); //
+        printf("Mirando tu nota (OB07), ¿qué código introduces? ");
+        scanf("%s", respuesta);
+
+        if (verificar_solucion(puz, n_puz, "P01", respuesta)) { //
+            if (!tieneObjeto(*inv, *n_inv, "OB02")) {
+                tObjeto dest = {"OB02", "Destornillador", "Herramienta", 5};
+                *inv = añadirObjetoDin(*inv, n_inv, dest); 
+                desbloquear_conexion(con, n_con, 7, 1, "OB02"); 
+            }
+        }
+    } else {
+        printf("\nEl teclado numerico brilla. No conoces la combinacion.\n");
+        printf("(Pista: Deberias registrar la mesa en la Sala 2)\n");
+    }
+    pasillo(inv, n_inv, con, n_con, puz, n_puz);
+}
+
+// SALA 6: BIBLIOTECA (ID 6)
+void sala6(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int n_puz) {
+    int op;
+    printf("\n--- [6] BIBLIOTECA (SALA FINAL) ---");
+    printf("\n1. Colocar LIBRO VIEJO (OB06) en el estante\n2. Volver al pasillo\n> ");
+    scanf("%d", &op);
+
+    if (op == 1 && tieneObjeto(*inv, *n_inv, "OB06")) {
+        printf("\n¡VICTORIA! HAS ESCAPADO DE LA UNIVERSIDAD.");
+        exit(0);
+    } else pasillo(inv, n_inv, con, n_con, puz, n_puz);
 }

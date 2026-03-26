@@ -15,8 +15,10 @@ Conexion* cargar_conexiones(const char* nombre_fichero, int* num_conexiones) {
 
     if (file != NULL) {
         while (fgets(linea, sizeof(linea), file)) {
-            array_conexiones = realloc(array_conexiones, (count + 1) * sizeof(Conexion));
-            if (array_conexiones != NULL) {
+            // SOLUCIÓN AL WARNING: Cast a (size_t) y cast al tipo de puntero (Conexion*)
+            Conexion* aux = (Conexion*)realloc(array_conexiones, (size_t)(count + 1) * sizeof(Conexion));
+            if (aux != NULL) {
+                array_conexiones = aux;
                 pos = 0;
                 campo = 0;
                 k = 0;
@@ -107,14 +109,10 @@ int desbloquear_conexion(Conexion* conexiones, int num_conexiones, int id_origen
         if (conexiones[i].id_origen == id_origen && conexiones[i].id_destino == id_destino) {
             if (strcmp(conexiones[i].estado, "Bloqueada") == 0 && strcmp(conexiones[i].cond, condicion_aportada) == 0) {
                 strcpy(conexiones[i].estado, "Activa");
-                printf("¡Conexion hacia la sala %02d desbloqueada con exito!\n", id_destino);
+                printf("¡Conexión hacia la sala %02d desbloqueada con éxito!\n", id_destino);
                 desbloqueado = 1;
             }
         }
-    }
-    
-    if (desbloqueado == 0) {
-        printf("No se pudo desbloquear la conexion.\n");
     }
     
     return desbloqueado;
