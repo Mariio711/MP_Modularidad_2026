@@ -4,7 +4,61 @@
 #include "puzzles.h"
 
 Puzle* cargar_puzles(const char* nombre_fichero, int* num_puzles) {
+    Puzle* array_puzles = NULL;
+    FILE* file = fopen(nombre_fichero, "r");
+    int count = 0;
+    char linea[300];
+    int pos;
+    int campo;
+    int k;
+    char buffer[300];
 
+    if (file != NULL) {
+        while (fgets(linea, sizeof(linea), file)) {
+            array_puzles = realloc(array_puzles, (count + 1) * sizeof(Puzle));
+            if (array_puzles != NULL) {
+                pos = 0;
+                campo = 0;
+                k = 0;
+                
+                while (linea[pos] != '\0' && linea[pos] != '\n') {
+                    if (linea[pos] == '-') {
+                        buffer[k] = '\0';
+                        if (campo == 0) {
+                            strcpy(array_puzles[count].id_puzle, buffer);
+                        } else if (campo == 1) {
+                            strcpy(array_puzles[count].nomb_puz, buffer);
+                        } else if (campo == 2) {
+                            array_puzles[count].id_sala = atoi(buffer);
+                        } else if (campo == 3) {
+                            strcpy(array_puzles[count].tipo, buffer);
+                        } else if (campo == 4) {
+                            strcpy(array_puzles[count].descrip, buffer);
+                        }
+                        campo++;
+                        k = 0;
+                    } else {
+                        buffer[k] = linea[pos];
+                        k++;
+                    }
+                    pos++;
+                }
+                buffer[k] = '\0';
+                if (campo == 5) {
+                    strcpy(array_puzles[count].sol, buffer);
+                }
+                
+                array_puzles[count].resuelto = 0;
+                count++;
+            }
+        }
+        fclose(file);
+    } else {
+        printf("Error: No se pudo abrir el fichero %s\n", nombre_fichero);
+    }
+    
+    *num_puzles = count;
+    return array_puzles;
 }
 
 void mostrar_descripcion_puzle(Puzle* puzles, int num_puzles, const char* id_puzle) {

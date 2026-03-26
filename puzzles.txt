@@ -1,6 +1,3 @@
-P01
-P02
-P03
-P04
-P05
-P06
+P01-Clave Cafeteria-00-Codigo-Clave descubierta bajo los examenes del Aula B01-1492
+P02-Clave A01-00-Codigo-Clave encontrada en el armario de Conserjeria-7109
+P03-Enigma Final-06-Palabra-Asignatura del libro viejo para escapar-9342

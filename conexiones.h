@@ -16,5 +16,4 @@ int comprobar_estado_conexion(Conexion* conexiones, int num_conexiones, int id_o
 int desbloquear_conexion(Conexion* conexiones, int num_conexiones, int id_origen, int id_destino, const char* condicion_aportada);
 void liberar_conexiones(Conexion* conexiones);
 
-
 #endif
