@@ -15,8 +15,10 @@ Puzle* cargar_puzles(const char* nombre_fichero, int* num_puzles) {
 
     if (file != NULL) {
         while (fgets(linea, sizeof(linea), file)) {
-            array_puzles = realloc(array_puzles, (count + 1) * sizeof(Puzle));
-            if (array_puzles != NULL) {
+            // SOLUCIÓN AL WARNING: Cast a (size_t) y cast al tipo de puntero (Puzle*)
+            Puzle* aux = (Puzle*)realloc(array_puzles, (size_t)(count + 1) * sizeof(Puzle));
+            if (aux != NULL) {
+                array_puzles = aux;
                 pos = 0;
                 campo = 0;
                 k = 0;
