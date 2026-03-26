@@ -56,7 +56,7 @@ int tieneObjeto(tObjeto* inventario, int n_inv, char* id_buscado) {
     return 0;
 }
 
-tObjeto* añadirObjetoDin(tObjeto* inventario, int *num_inv, tObjeto nuevo) {
+tObjeto* anadirObjetoDin(tObjeto* inventario, int *num_inv, tObjeto nuevo) {
     // Corrección: Añadido (size_t) para asegurar que el tamaño de memoria sea el tipo correcto
     tObjeto* aux = (tObjeto*)realloc(inventario, (size_t)(*num_inv + 1) * sizeof(tObjeto));
     if (aux != NULL) {
