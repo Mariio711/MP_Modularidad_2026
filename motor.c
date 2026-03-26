@@ -23,6 +23,9 @@ void iniciarMotorJuego(Usuario *usuarioActual) {
         return;
     }
 
+    // Cargar objetos del mundo
+    cargarObjetos(mundo, numHabitaciones);
+
     // Mensaje de bienvenida
     printf("\n" COLOR_CYAN "========================================" COLOR_RESET "\n");
     printf(COLOR_BOLD "   ¡Bienvenido a ESI-ESCAPE, %s!" COLOR_RESET "\n", usuarioActual->name);
@@ -54,6 +57,25 @@ void iniciarMotorJuego(Usuario *usuarioActual) {
         printf(COLOR_YELLOW ">>> %s <<<" COLOR_RESET "\n", actual->nombre);
         printf(COLOR_BOLD "Descr: " COLOR_RESET "%s\n", actual->descripcion);
         printf(COLOR_CYAN "----------------------------------------" COLOR_RESET "\n");
+
+        // Mostrar Objetos
+        int hayObjetosVisibles = 0;
+        for (int k = 0; k < actual->num_objetos; k++) {
+            if (actual->objetos[k].visible) {
+                hayObjetosVisibles = 1;
+                break;
+            }
+        }
+
+        if (hayObjetosVisibles) {
+            printf(COLOR_MAGENTA "Objetos visibles:" COLOR_RESET "\n");
+            for (int k = 0; k < actual->num_objetos; k++) {
+                if (actual->objetos[k].visible) {
+                    printf(" - %s: %s\n", actual->objetos[k].nombre, actual->objetos[k].descripcion);
+                }
+            }
+            printf(COLOR_CYAN "----------------------------------------" COLOR_RESET "\n");
+        }
         
         // Mostrar salidas (ayuda visual)
         printf("Caminos visibles: ");
@@ -68,10 +90,12 @@ void iniciarMotorJuego(Usuario *usuarioActual) {
         printf("2. Ir al Sur\n");
         printf("3. Ir al Este\n");
         printf("4. Ir al Oeste\n");
-        printf("5. Salir del juego\n");
+        printf("5. Coger objeto\n");
+        printf("6. Ver inventario\n");
+        printf("7. Salir del juego\n");
 
         // Leer opción numérica
-        printf("\n" COLOR_GREEN "Selecciona una opción (1-5): " COLOR_RESET);
+        printf("\n" COLOR_GREEN "Selecciona una opción (1-7): " COLOR_RESET);
         if (fgets(comando, sizeof(comando), stdin) == NULL) {
             salir = 1; continue;
         }
@@ -116,7 +140,15 @@ void iniciarMotorJuego(Usuario *usuarioActual) {
                 }
                 break;
 
-            case 5: // Salir
+            case 5: // Coger
+                procesarComandoCoger(usuarioActual, actual);
+                break;
+
+            case 6: // Inventario
+                mostrarInventario(usuarioActual);
+                break;
+
+            case 7: // Salir
                 salir = 1;
                 break;
 
@@ -133,4 +165,73 @@ void iniciarMotorJuego(Usuario *usuarioActual) {
     actualizarUsuarioIndividual(usuarioActual);
     
     printf("Progreso guardado. ¡Hasta pronto!\n");
+}
+
+// --- INVENTARIO ---
+
+void procesarComandoCoger(Usuario *usuario, Habitacion *sala) {
+    if (sala->num_objetos == 0) {
+        printf("No hay nada que coger aquí.\n");
+        return;
+    }
+
+    printf(COLOR_YELLOW "¿Qué quieres coger?" COLOR_RESET "\n");
+    printf("-------------------------\n");
+    for (int i=0; i < sala->num_objetos; i++) {
+        if (sala->objetos[i].recogible && sala->objetos[i].visible) {
+             printf("%d. %s\n", i+1, sala->objetos[i].nombre);
+        }
+    }
+    printf("0. Cancelar\n> ");
+
+    char bufer[100];
+    fgets(bufer, 100, stdin);
+    int seleccion = atoi(bufer);
+
+    if (seleccion > 0 && seleccion <= sala->num_objetos) {
+        Objeto *obj = &sala->objetos[seleccion-1];
+        
+        if (!obj->recogible || !obj->visible) {
+            printf("No puedes coger eso.\n");
+            return;
+        }
+
+        if (usuario->num_objetos >= MAX_INVENTARIO) {
+            printf("¡Tu inventario está lleno!\n");
+            return;
+        }
+
+        // Añadir a inventario
+        usuario->inventario[usuario->num_objetos] = *obj;
+        usuario->num_objetos++;
+        printf(COLOR_GREEN "Has cogido: %s" COLOR_RESET "\n", obj->nombre);
+
+        // Eliminar de la sala (desplaza el resto)
+        for (int j = seleccion-1; j < sala->num_objetos - 1; j++) {
+            sala->objetos[j] = sala->objetos[j+1];
+        }
+        sala->num_objetos--;
+        
+        // Guardar estado del usuario (incluye inventario y habitacion actual)
+        // Nota: habitacion_actual en usuario podría estar desactualizada si se ha movido pero no asignado
+        // Pero usamos usuarioActual que debería estar sincronizado o lo sincronizamos ahora
+        // usuario->habitacion_actual es la de inicio. NO. El motor usa idHabitacionActual
+        // Actualizamos usuario->habitacion_actual temporalmente para guardar?
+        // NO, idHabitacionActual es local. NO podemos acceder a ella desde aquí.
+        // Asumimos que se guarda al final. Si se cierra la sesión a lo bestia, se pierde.
+        // Pero actualizarUsuarioIndividual guarda lo que hay en el struct.
+    }
+}
+
+void mostrarInventario(Usuario *usuario) {
+    printf(COLOR_CYAN "\n=== INVENTARIO (%d/%d) ===" COLOR_RESET "\n", usuario->num_objetos, MAX_INVENTARIO);
+    if (usuario->num_objetos == 0) {
+        printf("Vacío.\n");
+    } else {
+        for (int i=0; i<usuario->num_objetos; i++) {
+            printf("- %s: %s\n", usuario->inventario[i].nombre, usuario->inventario[i].descripcion);
+        }
+    }
+    printf("-------------------------\n");
+    pausar();
 }

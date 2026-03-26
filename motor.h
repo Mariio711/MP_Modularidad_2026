@@ -8,3 +8,5 @@
 void iniciarMotorJuego(Usuario *usuarioActual);
 
 #endif
+void procesarComandoCoger(Usuario *usuario, Habitacion *sala);
+void mostrarInventario(Usuario *usuario);

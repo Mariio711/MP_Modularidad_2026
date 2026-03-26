@@ -63,7 +63,7 @@ int verificarUsuario(char *nombre, char *password, Usuario *dest) {
     if (!f) return 0;
     
     char linea[MAX_LINEA];
-    int id, sala;
+    int id;
     char tempName[MAX_CADENA], tempPass[MAX_CADENA];
 
     while (fgets(linea, MAX_LINEA, f)) {
@@ -90,6 +90,48 @@ int verificarUsuario(char *nombre, char *password, Usuario *dest) {
             strcpy(dest->name, tempName);
             strcpy(dest->password, tempPass);
             dest->habitacion_actual = sala;
+            
+            // Inicializar inventario
+            dest->num_objetos = 0;
+            
+            // Parsear inventario (formato: id1,id2,id3...)
+            // Nota: strtok ya avanzó hasta la sala. Avanzamos uno más.
+            token = strtok(NULL, "\n"); // El resto de la linea
+            
+            if (token && strlen(token) > 0) {
+                // Copia segura de la parte del inventario
+                char invPart[MAX_CADENA];
+                strncpy(invPart, token, MAX_CADENA - 1);
+                invPart[MAX_CADENA - 1] = 0;
+                
+                // Usamos una variable temporal y strtok_r es mejor, pero usaremos un loop manual simple con coma
+                char *ptr = invPart;
+                char *comma;
+                while ((comma = strchr(ptr, ',')) != NULL) {
+                    *comma = 0; // Terminar string en la coma
+                    int objId = atoi(ptr);
+                    if (objId > 0 && dest->num_objetos < MAX_INVENTARIO) {
+                         Objeto tempObj;
+                         if (obtenerObjetoPorId(objId, &tempObj)) {
+                             dest->inventario[dest->num_objetos] = tempObj;
+                             dest->num_objetos++;
+                         }
+                    }
+                    ptr = comma + 1;
+                }
+                // Último elemento (o único)
+                if (*ptr != 0) {
+                    int objId = atoi(ptr);
+                    if (objId > 0 && dest->num_objetos < MAX_INVENTARIO) {
+                         Objeto tempObj;
+                         if (obtenerObjetoPorId(objId, &tempObj)) {
+                             dest->inventario[dest->num_objetos] = tempObj;
+                             dest->num_objetos++;
+                         }
+                    }
+                }
+            }
+
             fclose(f);
             return 1;
         }
@@ -103,7 +145,6 @@ int existeUsuario(char *nombre) {
     if (!f) return 0;
     
     char linea[MAX_LINEA];
-    char tempName[MAX_CADENA];
     
     while (fgets(linea, MAX_LINEA, f)) {
         linea[strcspn(linea, "\n")] = 0;
@@ -143,7 +184,7 @@ void anadirUsuario(Usuario *nuevoUsuario) {
     FILE *f = fopen("usuarios.txt", "a");
     if (!f) return;
     
-    fprintf(f, "%d|%s|%s|%d\n", 
+    fprintf(f, "%d|%s|%s|%d|\n", 
         nuevoUsuario->id, 
         nuevoUsuario->name, 
         nuevoUsuario->password, 
@@ -163,14 +204,25 @@ void actualizarUsuarioIndividual(Usuario *u) {
     while (fgets(linea, MAX_LINEA, origen)) {
         strcpy(copiaLinea, linea);
         char *token = strtok(linea, "|");
+        if (!token) {
+             fprintf(destino, "%s", copiaLinea);
+             continue;
+        }
         int id = atoi(token);
         
         if (id == u->id) {
-            // Esta es la línea a actualizar
-            fprintf(destino, "%d|%s|%s|%d\n", u->id, u->name, u->password, u->habitacion_actual);
+            // Reconstruir string de inventario
+            char invStr[MAX_CADENA] = "";
+            for (int i=0; i<u->num_objetos; i++) {
+                char num[10];
+                sprintf(num, "%d", u->inventario[i].id);
+                strcat(invStr, num);
+                if (i < u->num_objetos - 1) strcat(invStr, ",");
+            }
+            
+            fprintf(destino, "%d|%s|%s|%d|%s\n", u->id, u->name, u->password, u->habitacion_actual, invStr);
         } else {
-            // Copiar original
-            fprintf(destino, "%s", copiaLinea);
+             fprintf(destino, "%s", copiaLinea);
         }
     }
     
@@ -244,4 +296,95 @@ int cargarMundo(Habitacion *mapa, int *numHabitaciones) {
     *numHabitaciones = count;
     fclose(f);
     return 1; // Éxito
+}
+
+// --- OBJETOS ---
+
+void cargarObjetos(Habitacion *mapa, int numHabitaciones) {
+    FILE *f = fopen("objetos.txt", "r");
+    if (!f) return;
+
+    char linea[MAX_LINEA];
+    while (fgets(linea, MAX_LINEA, f) != NULL) {
+        linea[strcspn(linea, "\n")] = 0;
+        if (strlen(linea) < 3) continue;
+
+        Objeto nuevoObjeto;
+        int salaId = -1;
+
+        // Parsear ID
+        char *token = strtok(linea, "|");
+        if (token) nuevoObjeto.id = atoi(token);
+
+        // Parsear Nombre
+        token = strtok(NULL, "|");
+        if (token) strncpy(nuevoObjeto.nombre, token, MAX_CADENA - 1);
+        nuevoObjeto.nombre[MAX_CADENA - 1] = '\0';
+
+        // Parsear Descripción
+        token = strtok(NULL, "|");
+        if (token) strncpy(nuevoObjeto.descripcion, token, MAX_CADENA - 1);
+        nuevoObjeto.descripcion[MAX_CADENA - 1] = '\0';
+
+        // Parsear Visible
+        token = strtok(NULL, "|");
+        if (token) nuevoObjeto.visible = atoi(token);
+
+        // Parsear Recogible
+        token = strtok(NULL, "|");
+        if (token) nuevoObjeto.recogible = atoi(token);
+
+        // Parsear ID Habitación
+        token = strtok(NULL, "|");
+        if (token) salaId = atoi(token);
+
+        // Buscar habitación y añadir objeto
+        if (salaId != -1) {
+            for (int i = 0; i < numHabitaciones; i++) {
+                if (mapa[i].id == salaId) {
+                    if (mapa[i].num_objetos < MAX_OBJETOS) {
+                        mapa[i].objetos[mapa[i].num_objetos] = nuevoObjeto;
+                        mapa[i].num_objetos++;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    fclose(f);
+}
+
+// --- INVENTARIO / OBJETOS INDIVIDUALES ---
+
+int obtenerObjetoPorId(int id, Objeto *dest) {
+    FILE *f = fopen("objetos.txt", "r");
+    if (!f) return 0;
+
+    char linea[MAX_LINEA];
+    int ok = 0;
+
+    while (fgets(linea, MAX_LINEA, f)) {
+        linea[strcspn(linea, "\n")] = 0;
+        char *token = strtok(linea, "|");
+        int currentId = atoi(token);
+
+        if (currentId == id) {
+            dest->id = id;
+
+            token = strtok(NULL, "|");
+            if (token) strncpy(dest->nombre, token, MAX_CADENA - 1);
+            else strcpy(dest->nombre, "Desconocido");
+            dest->nombre[MAX_CADENA - 1] = '\0';
+
+            token = strtok(NULL, "|");
+            if (token) strncpy(dest->descripcion, token, MAX_CADENA - 1);
+            else strcpy(dest->descripcion, "");
+            dest->descripcion[MAX_CADENA - 1] = '\0';
+
+            ok = 1;
+            break;
+        }
+    }
+    fclose(f);
+    return ok;
 }
