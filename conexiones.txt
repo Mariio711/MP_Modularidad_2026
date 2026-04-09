@@ -1,0 +1,6 @@
+C01-7-1-Bloqueada-OB02
+C02-7-2-Bloqueada-OB01
+C03-7-3-Bloqueada-OB03
+C04-7-4-Activa-NULL
+C05-7-5-Activa-NULL
+C06-7-6-Bloqueada-OB04
