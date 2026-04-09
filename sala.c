@@ -51,7 +51,7 @@ void pasillo(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, in
     } else if (op == 7) {
         if (!tieneObjeto(*inv, *n_inv, "OB01")) { // Comprueba posesión
             tObjeto llave1 = {"OB01", "Llave 1", "Abre el Aula B01", 7};
-            *inv = añadirObjetoDin(*inv, n_inv, llave1); // Añade dinámicamente
+            *inv = anadirObjetoDin(*inv, n_inv, llave1); // Añade dinámicamente
             desbloquear_conexion(con, n_con, 7, 2, "OB01"); // Desbloquea acceso
         } else printf("\nNo hay nada mas en las taquillas.\n");
         pasillo(inv, n_inv, con, n_con, puz, n_puz);
@@ -73,7 +73,7 @@ void sala1(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int 
             if (!tieneObjeto(*inv, *n_inv, "OB08")) {
                 printf("\n[ÉXITO] Abres el armario y encuentras una NOTA CON EL CÓDIGO P02.");
                 tObjeto nota2 = {"OB08", "Nota P02", "Contiene el codigo: 7109", 1};
-                *inv = añadirObjetoDin(*inv, n_inv, nota2); 
+                *inv = anadirObjetoDin(*inv, n_inv, nota2); 
             } else printf("\nYa tienes la nota del armario.\n");
         } else printf("\nNecesitas el DESTORNILLADOR (OB02) para forzar el armario.\n");
         sala1(inv, n_inv, con, n_con, puz, n_puz);
@@ -90,13 +90,13 @@ void sala2(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int 
     if (op == 1) {
         if (!tieneObjeto(*inv, *n_inv, "OB05")) {
             tObjeto mapa = {"OB05", "Mapa", "Mapa del edificio", 2};
-            *inv = añadirObjetoDin(*inv, n_inv, mapa); 
+            *inv = anadirObjetoDin(*inv, n_inv, mapa); 
         }
         
         if (!tieneObjeto(*inv, *n_inv, "OB07")) {
             printf("\n¡Encontrado! Un papel arrugado con el CODIGO P01.");
             tObjeto nota1 = {"OB07", "Nota P01", "Contiene el codigo: 1492", 2};
-            *inv = añadirObjetoDin(*inv, n_inv, nota1); 
+            *inv = anadirObjetoDin(*inv, n_inv, nota1); 
         } else {
             printf("\nNo hay nada mas de interes en la mesa.");
         }
@@ -113,7 +113,7 @@ void sala3(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int 
 
     if (op == 1 && !tieneObjeto(*inv, *n_inv, "OB04")) {
         tObjeto pomo = {"OB04", "Pomo Bronce", "Necesario para la Biblioteca", 3};
-        *inv = añadirObjetoDin(*inv, n_inv, pomo);
+        *inv = anadirObjetoDin(*inv, n_inv, pomo);
         desbloquear_conexion(con, n_con, 7, 6, "OB04"); //
         sala3(inv, n_inv, con, n_con, puz, n_puz);
     } else pasillo(inv, n_inv, con, n_con, puz, n_puz);
@@ -133,8 +133,8 @@ void sala4(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int 
             if (!tieneObjeto(*inv, *n_inv, "OB03")) {
                 tObjeto l1 = {"OB03", "Llave C01", "Llave plateada", 4};
                 tObjeto l2 = {"OB06", "Libro Viejo", "Metodologia", 4};
-                *inv = añadirObjetoDin(*inv, n_inv, l1);
-                *inv = añadirObjetoDin(*inv, n_inv, l2);
+                *inv = anadirObjetoDin(*inv, n_inv, l1);
+                *inv = anadirObjetoDin(*inv, n_inv, l2);
                 desbloquear_conexion(con, n_con, 7, 3, "OB03"); 
             }
         }
@@ -157,7 +157,7 @@ void sala5(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int 
         if (verificar_solucion(puz, n_puz, "P01", respuesta)) { //
             if (!tieneObjeto(*inv, *n_inv, "OB02")) {
                 tObjeto dest = {"OB02", "Destornillador", "Herramienta", 5};
-                *inv = añadirObjetoDin(*inv, n_inv, dest); 
+                *inv = anadirObjetoDin(*inv, n_inv, dest); 
                 desbloquear_conexion(con, n_con, 7, 1, "OB02"); 
             }
         }

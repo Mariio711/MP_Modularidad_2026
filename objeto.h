@@ -16,7 +16,7 @@ typedef struct {
 
 int cargarObjetos(tObjeto** lista);
 int tieneObjeto(tObjeto* inventario, int n_inv, char* id_buscado);
-tObjeto* añadirObjetoDin(tObjeto* inventario, int *num_inv, tObjeto nuevo);
+tObjeto* anadirObjetoDin(tObjeto* inventario, int *num_inv, tObjeto nuevo);
 void mostrarMochila(tObjeto* inventario, int n_inv);
 void mostrarMapa();
 
