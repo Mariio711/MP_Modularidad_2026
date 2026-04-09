@@ -3,6 +3,12 @@
 #include <string.h>
 #include "conexiones.h"
 
+/**
+ * Carga las conexiones entre salas desde un fichero.
+ * @param nombre_fichero Ruta al archivo de conexiones.
+ * @param num_conexiones Puntero donde se guardara el numero total de conexiones cargadas.
+ * @return Puntero al array dinamico de conexiones o NULL si hay un error.
+ */
 Conexion* cargar_conexiones(const char* nombre_fichero, int* num_conexiones) {
     Conexion* array_conexiones = NULL;
     FILE* file = fopen(nombre_fichero, "r");
@@ -60,6 +66,12 @@ Conexion* cargar_conexiones(const char* nombre_fichero, int* num_conexiones) {
     return array_conexiones;
 }
 
+/**
+ * Lista e imprime en pantalla las salidas disponibles desde una sala concreta.
+ * @param conexiones Array de conexiones del juego.
+ * @param num_conexiones Numero total de conexiones.
+ * @param id_sala Identificador de la sala actual.
+ */
 void listar_salidas_disponibles(Conexion* conexiones, int num_conexiones, int id_sala) {
     int encontradas = 0;
     printf("\n--- Salidas desde la sala %02d ---\n", id_sala);
@@ -88,6 +100,14 @@ int verificar_conexion(Conexion* conexiones, int num_conexiones, int id_origen, 
     return existe;
 }
 
+/**
+ * Comprueba si una conexion especifica esta "Activa" o "Cerrada/Bloqueada".
+ * @param conexiones Array de conexiones.
+ * @param num_conexiones Cantidad total del array.
+ * @param id_origen Sala donde se encuentra el jugador.
+ * @param id_destino Sala a la que intenta acceder.
+ * @return 1 si esta activa y disponible, 0 en caso contrario.
+ */
 int comprobar_estado_conexion(Conexion* conexiones, int num_conexiones, int id_origen, int id_destino) {
     int estado_activo = 0;
     
@@ -102,6 +122,15 @@ int comprobar_estado_conexion(Conexion* conexiones, int num_conexiones, int id_o
     return estado_activo;
 }
 
+/**
+ * Permite desbloquear una conexion proporcionando el objeto o condicion requerida.
+ * @param conexiones Array de estado global de conexiones.
+ * @param num_conexiones Numero total de aristas (conexiones).
+ * @param id_origen Sala actual.
+ * @param id_destino Sala a desbloquear.
+ * @param condicion_aportada Identificador del objeto aportado (ej. OB01).
+ * @return 1 si se desbloqueó con éxito, 0 caso contrario.
+ */
 int desbloquear_conexion(Conexion* conexiones, int num_conexiones, int id_origen, int id_destino, const char* condicion_aportada) {
     int desbloqueado = 0;
     
@@ -118,6 +147,10 @@ int desbloquear_conexion(Conexion* conexiones, int num_conexiones, int id_origen
     return desbloqueado;
 }
 
+/**
+ * Libera la memoria dinamica solicitada para el mapa de conexiones.
+ * @param conexiones Puntero al array global a liberar.
+ */
 void liberar_conexiones(Conexion* conexiones) {
     if (conexiones != NULL) {
         free(conexiones);

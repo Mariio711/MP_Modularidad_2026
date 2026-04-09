@@ -1,17 +1,26 @@
 #include <stdio.h>
 #include "auxiliar.h"
 
+/**
+ * Muestra un mensaje pidiendo accion del usuario y espera una entrada.
+ */
 void pausar() {
     printf("\nPresiona Enter para continuar...");
     limpiarBuffer();
     getchar();
 }
 
+/**
+ * Descarta todos los caracteres pendientes en el buffer de entrada `stdin` para evitar bloqueos.
+ */
 void limpiarBuffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 }
 
+/**
+ * Imprime el ASCII Art y banner publicitario al inicio de la sesion del juego.
+ */
 void mostrarBanner() {
     printf("\n");
     printf("  ███████╗███████╗██╗    ███████╗███████╗ ██████╗ █████╗ ██████╗ ███████╗\n");

@@ -15,6 +15,15 @@ void limpiar_buffer() {
 }
 
 // --- HUB CENTRAL: EL PASILLO (ID 7) ---
+/**
+ * Gestiona el hub central (pasillo) y enlaza con el resto de salas.
+ * @param inv Doble puntero al inventario del jugador.
+ * @param n_inv Puntero a la cantidad actual de objetos en la mochila.
+ * @param con Array global de conexiones.
+ * @param n_con Cantidad total de conexiones.
+ * @param puz Array global de puzles.
+ * @param n_puz Numero de puzles.
+ */
 void pasillo(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int n_puz) {
     int op;
     int id_pasillo = 7; 
@@ -62,6 +71,16 @@ void pasillo(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, in
 }
 
 // SALA 1: CONSERJERÍA (ID 1)
+/**
+ * Controlador y logica de resolucion para la Sala 1 (Conserjeria).
+ * Permite interactuar con objetos y evaluar estado del mapa.
+ * @param inv Doble puntero al inventario.
+ * @param n_inv Puntero al contador del inventario.
+ * @param con Nodos de conexion.
+ * @param n_con Numero de nodos.
+ * @param puz Estructura de puzles.
+ * @param n_puz Contador de puzles.
+ */
 void sala1(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int n_puz) {
     int op;
     printf("\n--- [1] CONSERJERÍA ---");
@@ -81,6 +100,15 @@ void sala1(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int 
 }
 
 // SALA 2: CLASE B01 (ID 2)
+/**
+ * Controlador y logica de resolucion para la Sala 2 (Clase B01).
+ * @param inv Puntero doble al inventario del usuario.
+ * @param n_inv Puntero al limite de items del usuario.
+ * @param con Array de conexiones.
+ * @param n_con Numero total de conexiones.
+ * @param puz Nodos de puzles validos.
+ * @param n_puz Total de puzles cargados.
+ */
 void sala2(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int n_puz) {
     int op;
     printf("\n--- [2] CLASE B01 ---");
@@ -105,6 +133,15 @@ void sala2(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int 
 }
 
 // SALA 3: CLASE C01 (ID 3)
+/**
+ * Controlador y logica de resolucion para la Sala 3 (Clase C01).
+ * @param inv Inventario de jugador (doble puntero).
+ * @param n_inv Cantidad actual de items.
+ * @param con Mapa de las puertas.
+ * @param n_con Cantidad de puertas totales.
+ * @param puz Puzles.
+ * @param n_puz Cantidad de puzles totales.
+ */
 void sala3(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int n_puz) {
     int op;
     printf("\n--- [3] CLASE C01 ---");
@@ -120,6 +157,15 @@ void sala3(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int 
 }
 
 // SALA 4: CLASE A01 (ID 4)
+/**
+ * Controlador y logica de resolucion para la Sala 4 (Clase A01).
+ * @param inv Referencia matricial del inventario.
+ * @param n_inv Tamano devuelto en base al jugador.
+ * @param con Enlaces entre habitaciones.
+ * @param n_con Tamano de los enlaces.
+ * @param puz Rompecabezas de entorno.
+ * @param n_puz Tamano del set rompecabezas.
+ */
 void sala4(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int n_puz) {
     char respuesta[50];
     printf("\n--- [4] CLASE A01 ---");
@@ -145,6 +191,15 @@ void sala4(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int 
 }
 
 // SALA 5: CAFETERÍA (ID 5)
+/**
+ * Controlador y logica de resolucion para la Sala 5 (Cafeteria).
+ * @param inv Puntero al puntero matriz del inventario.
+ * @param n_inv Entero contador elementos jugador.
+ * @param con Puntero matriz red mapa.
+ * @param n_con Tamaño de map.
+ * @param puz Puntero matriz puzzles.
+ * @param n_puz Tamano de puzles.
+ */
 void sala5(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int n_puz) {
     char respuesta[50];
     printf("\n--- [5] CAFETERÍA ---");
@@ -169,6 +224,16 @@ void sala5(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int 
 }
 
 // SALA 6: BIBLIOTECA (ID 6)
+/**
+ * Controlador y logica de resolucion para la Sala 6 (Biblioteca - Fin).
+ * Escena final del juego y comprobacion de requisitos de victoria.
+ * @param inv Puntero matricial variable a tObjeto
+ * @param n_inv Ocupacion inventario
+ * @param con Matriz dinamica de conexiones
+ * @param n_con Nro conexiones global
+ * @param puz Matriz puzles global
+ * @param n_puz Nro puzles leidos
+ */
 void sala6(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int n_puz) {
     int op;
     printf("\n--- [6] BIBLIOTECA (SALA FINAL) ---");

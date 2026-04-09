@@ -3,6 +3,12 @@
 #include <string.h>
 #include "puzzles.h"
 
+/**
+ * Carga los puzzles desde disco a memoria dinamicamente.
+ * @param nombre_fichero Ruta del archivo txt.
+ * @param num_puzles Retorno del numero de puzzles encontrados.
+ * @return Array con los puzzles o NULL.
+ */
 Puzle* cargar_puzles(const char* nombre_fichero, int* num_puzles) {
     Puzle* array_puzles = NULL;
     FILE* file = fopen(nombre_fichero, "r");
@@ -63,6 +69,12 @@ Puzle* cargar_puzles(const char* nombre_fichero, int* num_puzles) {
     return array_puzles;
 }
 
+/**
+ * Muestra los detalles de un puzzle no resuelto.
+ * @param puzles Array de puzzles cargados.
+ * @param num_puzles Total del array.
+ * @param id_puzle Id del puzzle a mostrar.
+ */
 void mostrar_descripcion_puzle(Puzle* puzles, int num_puzles, const char* id_puzle) {
     int encontrado = 0;
     
@@ -79,6 +91,14 @@ void mostrar_descripcion_puzle(Puzle* puzles, int num_puzles, const char* id_puz
     }
 }
 
+/**
+ * Evalua si la solucion insertada es la correcta para un puzle especifico.
+ * @param puzles Array global de puzles.
+ * @param num_puzles Cantidad total.
+ * @param id_puzle Identificador del puzle a atacar.
+ * @param respuesta Cadena introducida por el usuario.
+ * @return 1 si acerto, 0 en caso de fallo.
+ */
 int verificar_solucion(Puzle* puzles, int num_puzles, const char* id_puzle, const char* respuesta) {
     int correcto = 0;
     
@@ -97,6 +117,17 @@ int verificar_solucion(Puzle* puzles, int num_puzles, const char* id_puzle, cons
     return correcto;
 }
 
+/**
+ * Flujo combinado: verifica la respuesta de un puzzle y si es valida, desbloquea la puerta subyacente.
+ * @param puzles Puntero a puzzles.
+ * @param num_puzles Numero de puzzles.
+ * @param id_puzle Puzzle a descifrar.
+ * @param respuesta Solucion de usuario.
+ * @param conexiones Array de conexiones que queremos abrir.
+ * @param num_conexiones Numero total.
+ * @param id_origen Origen de la puerta bloqueada.
+ * @param id_destino Destino a desencriptar.
+ */
 void resolver_puzle_y_desbloquear(Puzle* puzles, int num_puzles, const char* id_puzle, const char* respuesta, Conexion* conexiones, int num_conexiones, int id_origen, int id_destino) {
     int verificado = verificar_solucion(puzles, num_puzles, id_puzle, respuesta);
     
@@ -105,6 +136,10 @@ void resolver_puzle_y_desbloquear(Puzle* puzles, int num_puzles, const char* id_
     }
 }
 
+/**
+ * Libera toda la memoria de los puzles.
+ * @param puzles Estructura a vaciar.
+ */
 void liberar_puzles(Puzle* puzles) {
     if (puzles != NULL) {
         free(puzles);

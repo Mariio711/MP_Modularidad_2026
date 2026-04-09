@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Parsea la lista de objetos inicial desde un archivo.
+ * @param lista Puntero doble al array en el que se aloca memoria para guardar los resultados.
+ * @return El numero total de objetos cargados y almacenados.
+ */
 int cargarObjetos(tObjeto** lista) {
     FILE* f = fopen("objeto.txt", "r");
     if (f == NULL) {
@@ -47,6 +52,13 @@ int cargarObjetos(tObjeto** lista) {
     return cont;
 }
 
+/**
+ * Busca linealmente en el inventario actual si un objeto está en posición del jugador.
+ * @param inventario Puntero base del inventario.
+ * @param n_inv Cantidad actual de items.
+ * @param id_buscado Identificador a buscar en la lista.
+ * @return 1 si lo encuentra, 0 si no lo tiene.
+ */
 int tieneObjeto(tObjeto* inventario, int n_inv, char* id_buscado) {
     for (int i = 0; i < n_inv; i++) {
         if (strcmp(inventario[i].id_obj, id_buscado) == 0) {
@@ -56,6 +68,13 @@ int tieneObjeto(tObjeto* inventario, int n_inv, char* id_buscado) {
     return 0;
 }
 
+/**
+ * Amplia el tamano del inventario dinamicamente usando realloc para insertar un nuevo objeto.
+ * @param inventario Puntero al array del inventario original.
+ * @param num_inv Direccion de la longitud del array (que se incrementara).
+ * @param nuevo El nuevo item a adherir.
+ * @return El nuevo puntero al area reallocada.
+ */
 tObjeto* anadirObjetoDin(tObjeto* inventario, int *num_inv, tObjeto nuevo) {
     // Corrección: Añadido (size_t) para asegurar que el tamaño de memoria sea el tipo correcto
     tObjeto* aux = (tObjeto*)realloc(inventario, (size_t)(*num_inv + 1) * sizeof(tObjeto));
@@ -71,6 +90,11 @@ tObjeto* anadirObjetoDin(tObjeto* inventario, int *num_inv, tObjeto nuevo) {
     return inventario;
 }
 
+/**
+ * Dibuja la UI de la mochila actual mostrando los objetos almacenados.
+ * @param inventario Array de items iterables.
+ * @param n_inv Total del array.
+ */
 void mostrarMochila(tObjeto* inventario, int n_inv) { 
     printf("\n======= TU INVENTARIO (%d objetos) =======", n_inv);
     if (n_inv == 0) {
@@ -83,6 +107,9 @@ void mostrarMochila(tObjeto* inventario, int n_inv) {
     printf("\n==========================================\n");
 }
 
+/**
+ * Imprime el mapa grafico y la leyenda basica.
+ */
 void mostrarMapa() {
     printf("\n           MAPA DEL ESCAPE ROOM\n");
     printf("                    7\n");

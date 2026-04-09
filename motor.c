@@ -14,6 +14,12 @@
  * Inicia el motor del juego
  * @param usuarioActual Puntero al usuario validado
  */
+/**
+ * Inicia el motor principal del videojuego, carga los datos dinamicos (mapa, puzles, inventario),
+ * llama al hub principal (pasillo) y, una vez sale, libera toda la memoria del arbol del mapa de forma recursiva.
+ * Por ultimo, persiste en el fichero de texto los progresos realizados en memoria.
+ * @param usuarioActual Referencia variable de los datos de la partida.
+ */
 void iniciarMotorJuego(Usuario *usuarioActual) {
     int num_conexiones = 0;
     int num_puzles = 0;
