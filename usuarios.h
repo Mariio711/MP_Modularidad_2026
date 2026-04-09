@@ -13,7 +13,7 @@ typedef struct {
     int habitacion_actual; // Última habitación visitada
     char name[MAX_CADENA];
     char password[MAX_CADENA];
-    Objeto inventario[MAX_INVENTARIO]; // Objetos en posesión
+    tObjeto inventario[MAX_INVENTARIO]; // Objetos en posesión
     int num_objetos; // Cantidad actual
 } Usuario;
 

@@ -58,7 +58,7 @@ void pasillo(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, in
     } else if (op == 8) {
         mostrarMochila(*inv, *n_inv); // Muestra inventario
         pasillo(inv, n_inv, con, n_con, puz, n_puz);
-    } else if (op == 0) exit(0);
+    } else if (op == 0) return;
 }
 
 // SALA 1: CONSERJERÍA (ID 1)
@@ -177,6 +177,6 @@ void sala6(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, int 
 
     if (op == 1 && tieneObjeto(*inv, *n_inv, "OB06")) {
         printf("\n¡VICTORIA! HAS ESCAPADO DE LA UNIVERSIDAD.");
-        exit(0);
+        return;
     } else pasillo(inv, n_inv, con, n_con, puz, n_puz);
 }
