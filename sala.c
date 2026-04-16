@@ -43,6 +43,15 @@ void pasillo(tObjeto** inv, int* n_inv, Conexion* con, int n_con, Puzle* puz, in
     }
 
     if (op >= 1 && op <= 6) {
+        // Intenta desbloquear la sala automáticamente si el jugador ya tiene la llave (o si cargó la partida desde un guardado)
+        if (!comprobar_estado_conexion(con, n_con, id_pasillo, op)) {
+            for (int i = 0; i < *n_inv; i++) {
+                if (desbloquear_conexion(con, n_con, id_pasillo, op, (*inv)[i].id_obj)) {
+                    break;
+                }
+            }
+        }
+
         // Verifica si la conexión está "Activa" en el sistema modular
         if (comprobar_estado_conexion(con, n_con, id_pasillo, op)) { 
             switch(op) {

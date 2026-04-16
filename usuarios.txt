@@ -1,2 +1,2 @@
-1|Mario|Mario123|2|OB01,OB05,OB07
+1|Mario|Mario123|2|OB01,OB05,OB07,OB02,OB08
 2|juan|juan123|1

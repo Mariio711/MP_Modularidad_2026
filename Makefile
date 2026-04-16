@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Wno-unused-parameter -std=c11
 TARGET = esi_escape
-SRCS = main.c motor.c usuarios.c ficheros.c auxiliar.c objetos.c sala.c conexiones.c puzzles.c
+SRCS = main.c motor.c usuarios.c ficheros.c auxiliar.c objeto.c sala.c conexiones.c puzzles.c
 OBJS = $(SRCS:.c=.o)
 
 .PHONY: all clean debug run re
